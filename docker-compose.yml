@@ -1,0 +1,64 @@
+version: '2'
+
+services:
+  #######################################
+  # PHP application Docker container
+  #######################################
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    ports:
+      - 8080:8080
+    links:
+      - mysql
+      - solr
+    volumes:
+      - ./app:/app
+      - .:/docker
+    # cap and privileged needed for slowlog
+    cap_add:
+      - SYS_PTRACE
+    privileged: true
+    env_file:
+      - etc/environment.yml
+      - etc/environment.development.yml
+    environment:
+      - VIRTUAL_HOST=t3solr.dev
+      - VIRTUAL_PORT=8080
+      - POSTFIX_RELAYHOST=[mail]:1025
+
+  #######################################
+  # MySQL server
+  #######################################
+  mysql:
+    build:
+      context: docker/mysql/
+      #dockerfile: MySQL-5.5.Dockerfile
+      dockerfile: MySQL-5.6.Dockerfile
+      #dockerfile: MySQL-5.7.Dockerfile
+      #dockerfile: MariaDB-5.5.Dockerfile
+      #dockerfile: MariaDB-10.Dockerfile
+      #dockerfile: Percona-5.5.Dockerfile
+      #dockerfile: Percona-5.6.Dockerfile
+      #dockerfile: Percona-5.7.Dockerfile
+    #ports:
+    #  - 13306:3306
+    env_file:
+      - etc/environment.yml
+      - etc/environment.development.yml
+
+  #######################################
+  # Solr server
+  #######################################
+  solr:
+    build:
+      context: docker/solr/
+    ports:
+      - 8989:8983
+    env_file:
+      - etc/environment.yml
+      - etc/environment.development.yml
+    environment:
+      - VIRTUAL_HOST=solr.t3solr.dev
+      - VIRTUAL_PORT=8983
