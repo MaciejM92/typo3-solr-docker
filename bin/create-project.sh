@@ -21,7 +21,7 @@ case "$1" in
     ## TYPO3 CMS
     ###################################
     "typo3")
-        execInDir "$CODE_DIR" "docker run --rm -v $CODE_DIR:/app composer/composer:alpine create-project typo3/cms-base-distribution \"/app\""
+        execInDir "$CODE_DIR" "docker run --rm -v $CODE_DIR:/app composer/composer:alpine create-project typo3/cms-base-distribution \"/app\" 7.6.*"
         execInDir "$CODE_DIR" "touch web/FIRST_INSTALL"
         ;;
 
